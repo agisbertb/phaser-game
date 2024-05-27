@@ -16,8 +16,8 @@ export class Game extends Scene {
 
         // Crea el sostre
         this.ground = this.platforms.create(512, 770, 'ground').setScale(10, 0.1).refreshBody();
-        this.ground.displayWidth = 2048;
-        this.ground.displayHeight = 64;
+        this.ground.displayWidth = 1024;
+        this.ground.displayHeight = 35;
         this.ground.setOrigin(0.5, 1);
         this.ground.setVisible(true); 
 
