@@ -28,26 +28,29 @@ export class Game extends Scene {
         // Habilitar control del teclat
         this.cursors = this.input.keyboard.createCursorKeys();
 
-        // Crear grup de pilotes i bombes
+        // Crear grup de pilotes, bombes i vides
         this.balls = this.physics.add.group();
         this.bombs = this.physics.add.group();
+        this.lives = this.physics.add.group();
 
         // Afegir col·lisions
         this.physics.add.collider(this.player, this.platforms);
         this.physics.add.collider(this.balls, this.player, this.catchBall, null, this);
         this.physics.add.collider(this.bombs, this.player, this.hitBomb, null, this);
+        this.physics.add.collider(this.lives, this.player, this.catchLife, null, this);
         this.physics.add.collider(this.balls, this.platforms, this.hitGround, null, this);
         this.physics.add.collider(this.bombs, this.platforms, this.hitGround, null, this);
+        this.physics.add.collider(this.lives, this.platforms, this.hitGround, null, this);
 
         // Puntuació
         this.score = 0;
-        this.scoreText = this.add.text(16, 16, 'Puntuació: 0', { fontSize: '32px', fill: '#000' });
+        this.scoreText = this.add.text(16, 16, 'Score: 0', { fontSize: '32px', fill: '#000' });
 
         // Vides
-        this.lives = 3;
+        this.livesCount = 3;
         this.livesText = this.add.text(16, 48, 'Vides: 3', { fontSize: '32px', fill: '#000' });
 
-        // Temporitzador per generar pilotes i bombes
+        // Temporitzador per generar pilotes, bombes i vides
         this.time.addEvent({
             delay: 1000,
             callback: this.addObject,
@@ -80,6 +83,13 @@ export class Game extends Scene {
                 child.destroy();
             }
         });
+
+        this.lives.children.iterate((child) => {
+            if (child.y > groundY) {
+                console.log(`Destruint vida fora del límit en y: ${child.y}`);
+                child.destroy();
+            }
+        });
     }
 
     catchBall(player, ball) {
@@ -90,37 +100,50 @@ export class Game extends Scene {
 
     hitBomb(player, bomb) {
         bomb.disableBody(true, true);
-        this.lives -= 1;
-        this.livesText.setText('Vides: ' + this.lives);
+        this.livesCount -= 1;
+        this.livesText.setText('Vides: ' + this.livesCount);
 
-        if (this.lives <= 0) {
+        if (this.livesCount <= 0) {
             this.scene.start('GameOver');
         }
     }
 
-    hitGround(ballOrBomb, platforms) {
-        console.log(`Objecte col·lisionat amb el terra en x: ${ballOrBomb.x}, y: ${ballOrBomb.y}`);
-        ballOrBomb.destroy();
+    catchLife(player, life) {
+        life.disableBody(true, true);
+        this.livesCount += 1;
+        this.livesText.setText('Vides: ' + this.livesCount);
+    }
+
+    hitGround(object, platforms) {
+        console.log(`Objecte col·lisionat amb el terra en x: ${object.x}, y: ${object.y}`);
+        object.destroy();
     }
 
     addObject() {
         const x = Phaser.Math.Between(0, 1024);
-        const type = Phaser.Math.Between(0, 1);
+        const type = Phaser.Math.Between(0, 99); // Ajustar la probabilitat d'aparició
 
-        if (type === 0) {
+        if (type < 50) { // 50% de probabilitat que aparegui una pilota
             const ball = this.balls.create(x, 0, 'ball');
             ball.setScale(0.1);
             ball.setBounce(0);
             ball.setCollideWorldBounds(true);
             ball.setVelocityY(200);
             console.log(`Pilota creada en x: ${x}, y: ${ball.y}`);
-        } else {
+        } else if (type < 95) { // 45% de probabilitat que aparegui una bomba
             const bomb = this.bombs.create(x, 0, 'bomb');
             bomb.setScale(0.1);
             bomb.setBounce(0);
             bomb.setCollideWorldBounds(true);
             bomb.setVelocityY(200);
             console.log(`Bomba creada en x: ${x}, y: ${bomb.y}`);
+        } else { // 5% de probabilitat que aparegui una vida
+            const life = this.lives.create(x, 0, 'life');
+            life.setScale(0.05); // Més petita que les altres
+            life.setBounce(0);
+            life.setCollideWorldBounds(true);
+            life.setVelocityY(300); // Les vides cauen més ràpid
+            console.log(`Vida creada en x: ${x}, y: ${life.y}`);
         }
     }
 }

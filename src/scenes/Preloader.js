@@ -20,6 +20,7 @@ export class Preloader extends Scene {
         this.load.image('ball', 'object.png'); 
         this.load.image('ground', 'ground.png');
         this.load.image('bomb', 'bomb.png');
+        this.load.image('life', 'life.png');
     }
 
     create() {
