@@ -44,11 +44,13 @@ export class Game extends Scene {
 
         // Puntuació
         this.score = 0;
-        this.scoreText = this.add.text(16, 16, 'Score: 0', { fontSize: '32px', fill: '#000' });
+        this.scoreText = this.add.text(16, 16, 'Puntuació: 0', { fontSize: '32px', fill: '#000' });
 
         // Vides
         this.livesCount = 3;
-        this.livesText = this.add.text(16, 48, 'Vides: 3', { fontSize: '32px', fill: '#000' });
+        this.livesLabel = this.add.text(16, 48, 'Vides:', { fontSize: '32px', fill: '#000' }); // Afegir text "Vides:"
+        this.livesIcons = this.add.group();
+        this.updateLivesIcons();
 
         // Temporitzador per generar pilotes, bombes i vides
         this.time.addEvent({
@@ -95,13 +97,13 @@ export class Game extends Scene {
     catchBall(player, ball) {
         ball.disableBody(true, true);
         this.score += 10;
-        this.scoreText.setText('Score: ' + this.score);
+        this.scoreText.setText('Puntuació: ' + this.score);
     }
 
     hitBomb(player, bomb) {
         bomb.disableBody(true, true);
         this.livesCount -= 1;
-        this.livesText.setText('Vides: ' + this.livesCount);
+        this.updateLivesIcons();
 
         if (this.livesCount <= 0) {
             this.scene.start('GameOver');
@@ -111,7 +113,7 @@ export class Game extends Scene {
     catchLife(player, life) {
         life.disableBody(true, true);
         this.livesCount += 1;
-        this.livesText.setText('Vides: ' + this.livesCount);
+        this.updateLivesIcons();
     }
 
     hitGround(object, platforms) {
@@ -144,6 +146,17 @@ export class Game extends Scene {
             life.setCollideWorldBounds(true);
             life.setVelocityY(300); // Les vides cauen més ràpid
             console.log(`Vida creada en x: ${x}, y: ${life.y}`);
+        }
+    }
+
+    updateLivesIcons() {
+        // Eliminar icones existents
+        this.livesIcons.clear(true, true);
+
+        // Afegir noves icones segons el nombre de vides
+        const startX = this.livesLabel.x + this.livesLabel.width + 10; // Iniciar després del text "Vides:"
+        for (let i = 0; i < this.livesCount; i++) {
+            this.livesIcons.create(startX + i * 30, 64, 'lifeIcon').setScale(0.1); // Ajustar la mida i espai entre icones de vida
         }
     }
 }
