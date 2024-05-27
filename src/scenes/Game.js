@@ -11,50 +11,43 @@ export class Game extends Scene {
         this.cameras.main.setBackgroundColor(0x00ff00);
         this.add.image(512, 384, 'background').setAlpha(0.5);
 
-        // Crea grup de plataformes
+        // Crear grup de plataformes
         this.platforms = this.physics.add.staticGroup();
 
-        // Crea el sostre
+        // Crear el terra
         this.ground = this.platforms.create(512, 770, 'ground').setScale(10, 0.1).refreshBody();
         this.ground.displayWidth = 1024;
         this.ground.displayHeight = 35;
         this.ground.setOrigin(0.5, 1);
-        this.ground.setVisible(true); 
+        this.ground.setVisible(true);
 
-        // Crea el ninot de el fa més petit
-        this.basket = this.physics.add.image(512, 660, 'basket').setImmovable().setScale(0.3);
-        this.basket.body.allowGravity = false;
+        // Crear el jugador i fer-lo més petit
+        this.player = this.physics.add.image(512, 660, 'player').setImmovable().setScale(0.3);
+        this.player.body.allowGravity = false;
 
-        // Habilitar el control pel teclat
+        // Habilitar control del teclat
         this.cursors = this.input.keyboard.createCursorKeys();
 
-        // Crea grup d'objectes que cauen
-        this.objects = this.physics.add.group({
-            key: 'object',
-            repeat: 5,
-            setXY: { x: 12, y: 0, stepX: 200 },
-            setScale: { x: 0.1, y: 0.1 }
-        });
+        // Crear grup de pilotes i bombes
+        this.balls = this.physics.add.group();
+        this.bombs = this.physics.add.group();
 
-        this.objects.children.iterate((child) => {
-            child.setBounce(0);
-            child.setCollideWorldBounds(true);
-            child.setVelocityY(200); // Asegurarse de que los objetos caen
-        });
-    
-        console.log(`Ground position: x=${this.ground.x}, y=${this.ground.y}`);
-        console.log(`Ground size: width=${this.ground.displayWidth}, height=${this.ground.displayHeight}`);
-
-        // Colisions
-        this.physics.add.collider(this.basket, this.platforms);
-        this.physics.add.collider(this.objects, this.basket, this.catchObject, null, this);
-        this.physics.add.collider(this.objects, this.platforms, this.hitGround, null, this);
+        // Afegir col·lisions
+        this.physics.add.collider(this.player, this.platforms);
+        this.physics.add.collider(this.balls, this.player, this.catchBall, null, this);
+        this.physics.add.collider(this.bombs, this.player, this.hitBomb, null, this);
+        this.physics.add.collider(this.balls, this.platforms, this.hitGround, null, this);
+        this.physics.add.collider(this.bombs, this.platforms, this.hitGround, null, this);
 
         // Puntuació
         this.score = 0;
-        this.scoreText = this.add.text(16, 16, 'Score: 0', { fontSize: '32px', fill: '#000' });
+        this.scoreText = this.add.text(16, 16, 'Puntuació: 0', { fontSize: '32px', fill: '#000' });
 
-        // Temporitzador per generar balons
+        // Vides
+        this.lives = 3;
+        this.livesText = this.add.text(16, 48, 'Vides: 3', { fontSize: '32px', fill: '#000' });
+
+        // Temporitzador per generar pilotes i bombes
         this.time.addEvent({
             delay: 1000,
             callback: this.addObject,
@@ -64,44 +57,70 @@ export class Game extends Scene {
     }
 
     update() {
-        // Moviment del ninot
+        // Moviment del jugador
         if (this.cursors.left.isDown) {
-            this.basket.setVelocityX(-500);
+            this.player.setVelocityX(-500);
         } else if (this.cursors.right.isDown) {
-            this.basket.setVelocityX(500);
+            this.player.setVelocityX(500);
         } else {
-            this.basket.setVelocityX(0);
+            this.player.setVelocityX(0);
         }
 
         const groundY = this.ground.y;
-        this.objects.children.iterate((child) => {
+        this.balls.children.iterate((child) => {
             if (child.y > groundY) {
-                console.log(`Destruyendo objeto fuera del límite en y: ${child.y}`); // Registro para depuración
+                console.log(`Destruint pilota fora del límit en y: ${child.y}`);
                 child.destroy();
             }
         });
 
+        this.bombs.children.iterate((child) => {
+            if (child.y > groundY) {
+                console.log(`Destruint bomba fora del límit en y: ${child.y}`);
+                child.destroy();
+            }
+        });
     }
 
-    catchObject(basket, object) {
-        object.disableBody(true, true);
+    catchBall(player, ball) {
+        ball.disableBody(true, true);
         this.score += 10;
         this.scoreText.setText('Score: ' + this.score);
     }
 
-    hitGround(object,platforms) {
-        console.log(`Objeto colisionó con el suelo en x: ${object.x}, y: ${object.y}`); // Registro para depuración
-        object.destroy();
+    hitBomb(player, bomb) {
+        bomb.disableBody(true, true);
+        this.lives -= 1;
+        this.livesText.setText('Vides: ' + this.lives);
 
+        if (this.lives <= 0) {
+            this.scene.start('GameOver');
+        }
+    }
+
+    hitGround(ballOrBomb, platforms) {
+        console.log(`Objecte col·lisionat amb el terra en x: ${ballOrBomb.x}, y: ${ballOrBomb.y}`);
+        ballOrBomb.destroy();
     }
 
     addObject() {
         const x = Phaser.Math.Between(0, 1024);
-        const object = this.objects.create(x, 0, 'object');
-        object.setScale(0.1); // Asegurarse de que los objetos se escalen correctamente
-        object.setBounce(0); // Evitar que reboten
-        object.setCollideWorldBounds(true);
-        object.setVelocityY(200); // Asegurarse de que los objetos caen
-        console.log(`Objeto creado en x: ${x}, y: ${object.y}`); // Registro para depuración
+        const type = Phaser.Math.Between(0, 1);
+
+        if (type === 0) {
+            const ball = this.balls.create(x, 0, 'ball');
+            ball.setScale(0.1);
+            ball.setBounce(0);
+            ball.setCollideWorldBounds(true);
+            ball.setVelocityY(200);
+            console.log(`Pilota creada en x: ${x}, y: ${ball.y}`);
+        } else {
+            const bomb = this.bombs.create(x, 0, 'bomb');
+            bomb.setScale(0.1);
+            bomb.setBounce(0);
+            bomb.setCollideWorldBounds(true);
+            bomb.setVelocityY(200);
+            console.log(`Bomba creada en x: ${x}, y: ${bomb.y}`);
+        }
     }
 }

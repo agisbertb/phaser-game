@@ -16,9 +16,10 @@ export class Preloader extends Scene {
     preload() {
         this.load.setPath('assets');
         this.load.image('logo', 'logo.png');
-        this.load.image('basket', 'basket.png');
-        this.load.image('object', 'object.png');
+        this.load.image('player', 'basket.png');
+        this.load.image('ball', 'object.png'); 
         this.load.image('ground', 'ground.png');
+        this.load.image('bomb', 'bomb.png');
     }
 
     create() {
