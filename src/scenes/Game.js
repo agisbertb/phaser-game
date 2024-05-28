@@ -27,6 +27,11 @@ export class Game extends Scene {
         // Crear el jugador i fer-lo més petit
         this.player = this.physics.add.image(512, 660, 'player').setImmovable(true).setScale(0.3);
         this.player.body.allowGravity = false;
+        this.player.setCollideWorldBounds(true); // Evitar que el jugador surti dels límits de la pantalla
+
+        // Ajustar la mida i el desplaçament del cos físic
+        this.player.body.setSize(200, 150); // Ajusta aquests valors segons sigui necessari
+        this.player.body.setOffset(125, 30); // Ajusta aquests valors segons sigui necessari
 
         // Habilitar control del teclat
         this.cursors = this.input.keyboard.createCursorKeys();
@@ -47,7 +52,7 @@ export class Game extends Scene {
 
         // Puntuació
         this.score = 0;
-        this.scoreText = this.add.text(16, 16, 'Puntuació: 0', { fontSize: '32px', fill: '#000' });
+        this.scoreText = this.add.text(16, 16, 'Score: 0', { fontSize: '32px', fill: '#000' });
 
         // Vides
         this.livesCount = 3;
@@ -100,7 +105,7 @@ export class Game extends Scene {
     catchBall(player, ball) {
         ball.disableBody(true, true);
         this.score += 10;
-        this.scoreText.setText('Puntuació: ' + this.score);
+        this.scoreText.setText('Score: ' + this.score);
     }
 
     hitBomb(player, bomb) {
