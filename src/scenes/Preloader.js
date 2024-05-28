@@ -32,6 +32,9 @@ export class Preloader extends Scene {
         this.load.image('soundOff', 'soundOff.png');
         this.load.audio('backgroundMusic', 'backgroundMusic.mp3');
         this.load.audio('gameOverMusic', 'gameOverMusic.mp3');
+        this.load.audio('catchBallSound', 'catchBall.mp3');
+        this.load.audio('hitBombSound', 'hitBomb.mp3');
+        this.load.audio('catchLifeSound', 'catchLife.mp3');
     }
 
     create() {

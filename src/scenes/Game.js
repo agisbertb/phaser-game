@@ -8,9 +8,14 @@ export class Game extends Scene {
     create() {
         console.log('Game: create');
 
-        // Reproducir música de fondo
+        // Reproducir música de fons
         this.backgroundMusic = this.sound.add('backgroundMusic', { loop: true });
         this.backgroundMusic.play();
+
+        // Afegir sons
+        this.catchBallSound = this.sound.add('catchBallSound');
+        this.hitBombSound = this.sound.add('hitBombSound');
+        this.catchLifeSound = this.sound.add('catchLifeSound');
 
         this.cameras.main.setBackgroundColor(0x00ff00);
         this.add.image(512, 384, 'background').setAlpha(0.5);
@@ -65,8 +70,8 @@ export class Game extends Scene {
         this.updateLivesIcons();
 
         // Iconos de sonido
-        this.soundOnIcon = this.add.image(950, 50, 'soundOn').setScale(0.5).setInteractive();
-        this.soundOffIcon = this.add.image(950, 50, 'soundOff').setScale(0.5).setInteractive();
+        this.soundOnIcon = this.add.image(950, 50, 'soundOn').setScale(0.1).setInteractive();
+        this.soundOffIcon = this.add.image(950, 50, 'soundOff').setScale(0.1).setInteractive();
         this.soundOffIcon.setVisible(false);
 
         // Interactividad de los iconos de sonido
@@ -117,12 +122,14 @@ export class Game extends Scene {
 
     catchBall(player, ball) {
         ball.disableBody(true, true);
+        this.catchBallSound.play();
         this.score += 10;
         this.scoreText.setText('Puntuació: ' + this.score);
     }
 
     hitBomb(player, bomb) {
         bomb.disableBody(true, true);
+        this.hitBombSound.play();
         this.livesCount -= 1;
         this.updateLivesIcons();
     
@@ -135,6 +142,7 @@ export class Game extends Scene {
 
     catchLife(player, life) {
         life.disableBody(true, true);
+        this.catchLifeSound.play();
         this.livesCount += 1;
         this.updateLivesIcons();
     }
