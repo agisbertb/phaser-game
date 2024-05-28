@@ -52,7 +52,7 @@ export class Game extends Scene {
 
         // Puntuació
         this.score = 0;
-        this.scoreText = this.add.text(16, 16, 'Score: 0', { fontSize: '32px', fill: '#000' });
+        this.scoreText = this.add.text(16, 16, 'Puntuació: 0', { fontSize: '32px', fill: '#000' });
 
         // Vides
         this.livesCount = 3;
@@ -105,18 +105,19 @@ export class Game extends Scene {
     catchBall(player, ball) {
         ball.disableBody(true, true);
         this.score += 10;
-        this.scoreText.setText('Score: ' + this.score);
+        this.scoreText.setText('Puntuació: ' + this.score);
     }
 
     hitBomb(player, bomb) {
         bomb.disableBody(true, true);
         this.livesCount -= 1;
         this.updateLivesIcons();
-
+    
         if (this.livesCount <= 0) {
             this.scene.start('GameOver');
         }
     }
+   
 
     catchLife(player, life) {
         life.disableBody(true, true);

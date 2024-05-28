@@ -6,16 +6,24 @@ export class GameOver extends Scene {
     }
 
     create() {
-        this.cameras.main.setBackgroundColor(0xff0000);
-        this.add.image(512, 384, 'background').setAlpha(0.5);
+        // Afegir la imatge del "Game Over" i ajustar la seva mida
+        this.add.image(512, 384, 'gameOverImage'); // Ajustar la mida segons sigui necessari
 
-        this.add.text(512, 384, 'Game Over', {
-            fontFamily: 'Arial Black', fontSize: 64, color: '#ffffff',
-            stroke: '#000000', strokeThickness: 8,
-            align: 'center'
-        }).setOrigin(0.5);
+        // Afegir botó per reiniciar el joc
+        const restartButton = this.add.image(535, 400, 'restartButton').setInteractive();
+        restartButton.on('pointerdown', () => this.scene.start('Game'));
 
-        this.input.once('pointerdown', () => {
+        // Afegir botó per tornar al menú
+        const menuButton = this.add.image(535, 500, 'menuButton').setInteractive();
+        menuButton.on('pointerdown', () => this.scene.start('MainMenu'));
+
+        // Detectar quan es prem la tecla SPACE per reiniciar el joc
+        this.input.keyboard.once('keydown-SPACE', () => {
+            this.scene.start('Game');
+        });
+
+        // Detectar quan es prem la tecla M per tornar al menú
+        this.input.keyboard.once('keydown-M', () => {
             this.scene.start('MainMenu');
         });
     }
