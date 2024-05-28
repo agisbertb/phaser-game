@@ -11,6 +11,9 @@ export class Game extends Scene {
         this.cameras.main.setBackgroundColor(0x00ff00);
         this.add.image(512, 384, 'background').setAlpha(0.5);
 
+        // Afegir una imatge sobre el fons
+        this.add.image(512, 384, 'foregroundImage'); // Canvia 'foregroundImage' pel nom de la teva imatge
+
         // Crear grup de plataformes
         this.platforms = this.physics.add.staticGroup();
 
@@ -22,7 +25,7 @@ export class Game extends Scene {
         this.ground.setVisible(true);
 
         // Crear el jugador i fer-lo més petit
-        this.player = this.physics.add.image(512, 660, 'player').setImmovable().setScale(0.3);
+        this.player = this.physics.add.image(512, 660, 'player').setImmovable(true).setScale(0.3);
         this.player.body.allowGravity = false;
 
         // Habilitar control del teclat

@@ -22,6 +22,7 @@ export class Preloader extends Scene {
         this.load.image('bomb', 'bomb.png');
         this.load.image('life', 'life.png');
         this.load.image('lifeIcon', 'lifeIcon.png');
+        this.load.image('foregroundImage', 'foregroundImage.png');
     }
 
     create() {
