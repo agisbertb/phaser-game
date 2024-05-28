@@ -6,24 +6,34 @@ export class GameOver extends Scene {
     }
 
     create() {
-        // Afegir la imatge del "Game Over" i ajustar la seva mida
-        this.add.image(512, 384, 'gameOverImage'); // Ajustar la mida segons sigui necessari
+        this.add.image(512, 384, 'gameOverImage')
 
-        // Afegir botó per reiniciar el joc
+        this.gameOverMusic = this.sound.add('gameOverMusic', { loop: true });
+        this.gameOverMusic.play();
+
+        if (this.backgroundMusic) {
+            this.backgroundMusic.stop();
+        }
+
         const restartButton = this.add.image(535, 400, 'restartButton').setInteractive();
-        restartButton.on('pointerdown', () => this.scene.start('Game'));
-
-        // Afegir botó per tornar al menú
-        const menuButton = this.add.image(535, 500, 'menuButton').setInteractive();
-        menuButton.on('pointerdown', () => this.scene.start('MainMenu'));
-
-        // Detectar quan es prem la tecla SPACE per reiniciar el joc
-        this.input.keyboard.once('keydown-SPACE', () => {
+        restartButton.on('pointerdown', () => {
+            this.gameOverMusic.stop();
             this.scene.start('Game');
         });
 
-        // Detectar quan es prem la tecla M per tornar al menú
+        const menuButton = this.add.image(535, 500, 'menuButton').setInteractive();
+        menuButton.on('pointerdown', () => {
+            this.gameOverMusic.stop();
+            this.scene.start('MainMenu');
+        });
+
+        this.input.keyboard.once('keydown-SPACE', () => {
+            this.gameOverMusic.stop();
+            this.scene.start('Game');
+        });
+
         this.input.keyboard.once('keydown-M', () => {
+            this.gameOverMusic.stop();
             this.scene.start('MainMenu');
         });
     }

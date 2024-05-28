@@ -28,6 +28,10 @@ export class Preloader extends Scene {
         this.load.image('menuButton', 'menu.png');
         this.load.image('mainMenuBackground', 'mainMenuBackground.png');
         this.load.image('playButton', 'playButton.png');
+        this.load.image('soundOn', 'soundOn.png');
+        this.load.image('soundOff', 'soundOff.png');
+        this.load.audio('backgroundMusic', 'backgroundMusic.mp3');
+        this.load.audio('gameOverMusic', 'gameOverMusic.mp3');
     }
 
     create() {

@@ -8,6 +8,10 @@ export class Game extends Scene {
     create() {
         console.log('Game: create');
 
+        // Reproducir música de fondo
+        this.backgroundMusic = this.sound.add('backgroundMusic', { loop: true });
+        this.backgroundMusic.play();
+
         this.cameras.main.setBackgroundColor(0x00ff00);
         this.add.image(512, 384, 'background').setAlpha(0.5);
 
@@ -59,6 +63,15 @@ export class Game extends Scene {
         this.livesLabel = this.add.text(16, 48, 'Vides:', { fontSize: '32px', fill: '#000' }); // Afegir text "Vides:"
         this.livesIcons = this.add.group();
         this.updateLivesIcons();
+
+        // Iconos de sonido
+        this.soundOnIcon = this.add.image(950, 50, 'soundOn').setScale(0.5).setInteractive();
+        this.soundOffIcon = this.add.image(950, 50, 'soundOff').setScale(0.5).setInteractive();
+        this.soundOffIcon.setVisible(false);
+
+        // Interactividad de los iconos de sonido
+        this.soundOnIcon.on('pointerdown', () => this.toggleSound(false));
+        this.soundOffIcon.on('pointerdown', () => this.toggleSound(true));
 
         // Temporitzador per generar pilotes, bombes i vides
         this.time.addEvent({
@@ -114,6 +127,7 @@ export class Game extends Scene {
         this.updateLivesIcons();
     
         if (this.livesCount <= 0) {
+            this.backgroundMusic.stop(); // Detener la música de fondo
             this.scene.start('GameOver');
         }
     }
@@ -166,6 +180,18 @@ export class Game extends Scene {
         const startX = this.livesLabel.x + this.livesLabel.width + 10; // Iniciar després del text "Vides:"
         for (let i = 0; i < this.livesCount; i++) {
             this.livesIcons.create(startX + i * 30, 64, 'lifeIcon').setScale(0.1); // Ajustar la mida i espai entre icones de vida
+        }
+    }
+
+    toggleSound(enable) {
+        if (enable) {
+            this.backgroundMusic.play();
+            this.soundOnIcon.setVisible(true);
+            this.soundOffIcon.setVisible(false);
+        } else {
+            this.backgroundMusic.stop();
+            this.soundOnIcon.setVisible(false);
+            this.soundOffIcon.setVisible(true);
         }
     }
 }
