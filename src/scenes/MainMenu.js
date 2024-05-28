@@ -6,17 +6,11 @@ export class MainMenu extends Scene {
     }
 
     create() {
-        this.add.image(512, 384, 'background');
-        this.add.image(512, 300, 'logo');
+        // Agregar la imagen de fondo del menú principal
+        this.add.image(512, 384, 'mainMenuBackground');
 
-        this.add.text(512, 460, 'Main Menu', {
-            fontFamily: 'Arial Black', fontSize: 38, color: '#ffffff',
-            stroke: '#000000', strokeThickness: 8,
-            align: 'center'
-        }).setOrigin(0.5);
-
-        this.input.once('pointerdown', () => {
-            this.scene.start('Game');
-        });
+        // Agregar el botón de "Jugar"
+        const playButton = this.add.image(512, 500, 'playButton').setInteractive();
+        playButton.on('pointerdown', () => this.scene.start('Game'));
     }
 }

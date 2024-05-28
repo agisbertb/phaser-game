@@ -24,8 +24,10 @@ export class Preloader extends Scene {
         this.load.image('lifeIcon', 'lifeIcon.png');
         this.load.image('foregroundImage', 'foregroundImage.png');
         this.load.image('gameOverImage', 'gameOver.png');
-        this.load.image('restartButton', 'restart.png'); // Carrega la imatge del botó de reiniciar
+        this.load.image('restartButton', 'restart.png');
         this.load.image('menuButton', 'menu.png');
+        this.load.image('mainMenuBackground', 'mainMenuBackground.png');
+        this.load.image('playButton', 'playButton.png');
     }
 
     create() {
